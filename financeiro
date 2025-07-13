@@ -1,0 +1,35 @@
+# Visão Geral do Plano Financeiro da HARU
+
+Este diretório contém todos os documentos e dados financeiros relacionados à projeção e valuation da HARU. Nosso objetivo é apresentar uma análise transparente e detalhada da viabilidade econômica e do potencial de crescimento da empresa.
+
+## Documentos e Dados Principais
+
+* **[`Projeção_Receita_Despesas.md`](./Projecao_Receita_Despesas.md):** Detalha nossas premissas e a projeção de receita e despesas para os próximos 7 anos, com base no arquivo `Venture capital.xlsx - Planilha4.csv`.
+* **[`Analise_Valuation.md`](./Analise_Valuation.md):** Apresenta a metodologia, premissas e resultados do valuation da HARU, derivado do arquivo `Venture capital.xlsx - Valuation 5Y.csv`.
+* **[`Venture capital.xlsx - Planilha4.csv`](./Venture%20capital.xlsx%20-%20Planilha4.csv):** Dados brutos da projeção de receita e despesas.
+* **[`Venture capital.xlsx - Valuation 5Y.csv`](./Venture%20capital.xlsx%20-%20Valuation%205Y.csv):** Dados brutos da análise de valuation.
+* **(Opcional) [`HARU_Financial_Summary.pdf`](./HARU_Financial_Summary.pdf):** (Se você criar) Uma versão PDF da nossa planilha financeira completa para fácil visualização.
+
+## Principais Destaques Financeiros
+
+* **Crescimento Robusto:** Nossas projeções indicam um crescimento acelerado da receita, impulsionado pela expansão do mercado e pela escalabilidade do nosso modelo.
+* **Margens Saudáveis:** A manutenção de uma margem de Lucro Bruto de 70% reflete a eficiência do nosso modelo de custos.
+* **Investimento em Escalabilidade:** Os investimentos em infraestrutura, software e IA são projetados para sustentar o crescimento e otimizar as operações.
+* **Valuation Promissor:** A análise de valuation valida o potencial de retorno para investidores, refletindo o valor gerado pela nossa proposta de solução.
+
+## Premissas Chave
+
+Nossas projeções financeiras são baseadas em premissas cuidadosamente elaboradas, considerando:
+
+* **Expansão Gradual:** Foco regional inicial, seguido por expansão para grandes e médias empresas.
+* **Adoção de Tecnologia:** Investimento contínuo em IA e infraestrutura tecnológica para otimização e escalabilidade.
+* **Modelo de Negócio Sustentável:** Receita gerada pela conexão de talentos e capacitação, com custos bem controlados.
+* **Cenário Econômico:** Consideração de um cenário econômico estável para as projeções.
+
+## Próximos Passos Financeiros
+
+* **Monitoramento de KPIs:** Acompanhamento constante dos principais indicadores de performance financeira.
+* **Otimização de Custos:** Busca contínua por eficiência operacional e otimização de custos.
+* **Rodadas de Investimento:** Preparação para futuras rodadas de investimento com base no desempenho e nas projeções.
+
+Para uma compreensão aprofundada, por favor, explore os documentos e arquivos CSV detalhados neste diretório.
