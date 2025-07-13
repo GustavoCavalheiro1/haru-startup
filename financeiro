@@ -33,3 +33,153 @@ Nossas projeções financeiras são baseadas em premissas cuidadosamente elabora
 * **Rodadas de Investimento:** Preparação para futuras rodadas de investimento com base no desempenho e nas projeções.
 
 Para uma compreensão aprofundada, por favor, explore os documentos e arquivos CSV detalhados neste diretório.
+# --- Célula 1: Configuração Inicial e Importações ---
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+import numpy as np
+
+# Importar as funções auxiliares que criamos (se você as moveu para src/)
+# import sys
+# sys.path.append('../src') # Adiciona o diretório 'src' ao caminho de busca
+# from modelos_financeiros import calculate_npv, calculate_terminal_value_perpetuity
+# from utils import load_and_clean_financial_data # Se usar esta função para carregar
+
+# Configurações de visualização
+sns.set_style('whitegrid')
+plt.rcParams['figure.figsize'] = (12, 7)
+plt.rcParams['font.size'] = 12
+plt.rcParams['axes.labelsize'] = 14
+plt.rcParams['axes.titlesize'] = 16
+plt.rcParams['xtick.labelsize'] = 12
+plt.rcParams['ytick.labelsize'] = 12
+plt.rcParams['legend.fontsize'] = 12
+plt.rcParams['lines.linewidth'] = 2
+
+# --- Célula 2: Carregamento e Pré-processamento dos Dados ---
+file_path_valuation = '../data/financeiro/Venture capital.xlsx - Valuation 5Y.csv'
+
+try:
+    df_valuation = pd.read_csv(file_path_valuation, encoding='utf-8')
+    print("Dados de valuation carregados com sucesso!")
+
+    # Limpeza e conversão para numérico (adapte conforme seu CSV real)
+    # Identifique as colunas que representam valores monetários
+    # Exemplo: 'Fluxo de Caixa Livre', 'Valor Presente FC', 'Valor Terminal', 'Valor Presente Terminal'
+    numeric_cols_valuation = ['Fluxo de Caixa Livre', 'Valor Presente FC', 'Outra Coluna Financeira do CSV'] # AJUSTE ESTA LISTA!
+    for col in numeric_cols_valuation:
+        if col in df_valuation.columns:
+            df_valuation[col] = df_valuation[col].astype(str).str.replace('R\$', '', regex=True).str.replace('.', '', regex=False).str.replace(',', '.', regex=False).str.strip()
+            df_valuation[col] = pd.to_numeric(df_valuation[col], errors='coerce')
+    
+    df_valuation = df_valuation.fillna(0) # Preencher NaNs com 0 ou outro tratamento
+
+    if 'Ano' in df_valuation.columns:
+        df_valuation['Ano'] = pd.to_numeric(df_valuation['Ano'])
+
+    print("\nPrimeiras 5 linhas dos dados processados:")
+    print(df_valuation.head())
+    print("\nTipos de dados após processamento:")
+    print(df_valuation.info())
+
+except FileNotFoundError:
+    print(f"Erro: O arquivo não foi encontrado em {file_path_valuation}. Verifique o caminho.")
+    df_valuation = pd.DataFrame()
+
+# --- Célula 3: Análise do Valuation (Recálculo ou Verificação) ---
+if not df_valuation.empty:
+    print("\n--- Análise de Valuation ---")
+    
+    # Premissas de Valuation (AJUSTE COM SEUS VALORES REAIS)
+    wacc = 0.15 # Exemplo: 15% (Custo Médio Ponderado de Capital)
+    g = 0.03    # Exemplo: 3% (Taxa de Crescimento na Perpetuidade)
+
+    if 'Fluxo de Caixa Livre' in df_valuation.columns:
+        cash_flows = df_valuation['Fluxo de Caixa Livre'].tolist()
+        
+        # Calcular VPL dos fluxos explícitos
+        npv_explicit_cfs = 0
+        for i, cf in enumerate(cash_flows):
+            npv_explicit_cfs += cf / ((1 + wacc)**(i + 1))
+        
+        print(f"Valor Presente dos Fluxos de Caixa Explícitos (5 Anos): R$ {npv_explicit_cfs:,.2f}")
+
+        # Calcular Valor Terminal e seu Valor Presente
+        if len(cash_flows) > 0:
+            last_cf = cash_flows[-1]
+            last_period_year = df_valuation['Ano'].iloc[-1]
+            
+            try:
+                # Usando a função se você tiver 'modelos_financeiros.py'
+                # terminal_value, npv_terminal_value = calculate_terminal_value_perpetuity(last_cf, wacc, g, last_period_year)
+                
+                # Cálculo direto aqui se não usar a função externa
+                terminal_value = (last_cf * (1 + g)) / (wacc - g)
+                npv_terminal_value = terminal_value / ((1 + wacc)**last_period_year)
+
+                print(f"Valor Terminal (no Ano {last_period_year}): R$ {terminal_value:,.2f}")
+                print(f"Valor Presente do Valor Terminal: R$ {npv_terminal_value:,.2f}")
+
+                # Valor Total da Empresa (Enterprise Value / Equity Value simplificado)
+                total_valuation = npv_explicit_cfs + npv_terminal_value
+                print(f"\n**Valor Total da HARU (Estimativa): R$ {total_valuation:,.2f}**")
+                
+            except ValueError as e:
+                print(f"Erro ao calcular Valor Terminal: {e}")
+            except Exception as e:
+                print(f"Ocorreu um erro no cálculo do Valor Terminal ou Valor Total: {e}")
+        else:
+            print("Não há fluxos de caixa para calcular o Valor Terminal.")
+    else:
+        print("Coluna 'Fluxo de Caixa Livre' não encontrada. Verifique seu CSV de valuation.")
+
+# --- Célula 4: Visualizações do Fluxo de Caixa e Componentes do Valor ---
+if not df_valuation.empty and 'Fluxo de Caixa Livre' in df_valuation.columns:
+    # Gráfico 1: Projeção de Fluxo de Caixa Livre (Barras)
+    plt.figure(figsize=(12, 7))
+    sns.barplot(x='Ano', y='Fluxo de Caixa Livre', data=df_valuation, palette='viridis')
+    plt.title('Projeção de Fluxo de Caixa Livre da HARU', fontsize=16)
+    plt.xlabel('Ano', fontsize=14)
+    plt.ylabel('Fluxo de Caixa Livre (R$)', fontsize=14)
+    plt.ticklabel_format(style='plain', axis='y')
+    plt.grid(axis='y', linestyle='--', alpha=0.7)
+    plt.xticks(df_valuation['Ano'])
+    plt.tight_layout()
+    plt.show()
+
+    # Gráfico 2: Contribuição dos Componentes para o Valuation (Gráfico de Pizza ou Barras Empilhadas)
+    # Isso requer que você tenha o VPL dos fluxos explícitos e do TV calculados e somados.
+    # Se você tiver uma linha de "Valor Total da Empresa" no seu CSV, pode usar essa.
+    # Exemplo simples com valores calculados acima:
+    if 'total_valuation' in locals() and 'npv_explicit_cfs' in locals() and 'npv_terminal_value' in locals():
+        labels = ['VPL Fluxos Explícitos', 'VPL Valor Terminal']
+        sizes = [npv_explicit_cfs, npv_terminal_value]
+        colors = ['#66b3ff', '#ffcc99'] # Azul claro, Laranja claro
+
+        plt.figure(figsize=(8, 8))
+        plt.pie(sizes, labels=labels, colors=colors, autopct='%1.1f%%', startangle=90,
+                pctdistance=0.85, wedgeprops=dict(width=0.3)) # Gráfico de rosca
+        
+        # Desenhar círculo central para fazer o gráfico de rosca (donut chart)
+        centre_circle = plt.Circle((0,0),0.70,fc='white')
+        fig = plt.gcf()
+        fig.gca().add_artist(centre_circle)
+
+        plt.title('Composição do Valor da Empresa (Valuation)', fontsize=16)
+        plt.axis('equal') # Garante que o gráfico de pizza seja um círculo.
+        plt.tight_layout()
+        plt.show()
+    else:
+        print("Não foi possível gerar o gráfico de composição do valuation sem os valores calculados.")
+
+
+# --- Célula 5: Insights e Recomendações ---
+print("\n--- Conclusões e Insights da Análise de Valuation ---")
+print("1. **Crescimento de Fluxo de Caixa:** A projeção crescente de Fluxo de Caixa Livre é um indicador forte do potencial de geração de valor da HARU.")
+print("2. **Impacto do Valor Terminal:** O Valor Terminal geralmente representa uma parcela significativa do valuation total, o que ressalta a importância das premissas de crescimento na perpetuidade (g) e da taxa de desconto (WACC).")
+print("3. **Sensibilidade:** É fundamental realizar análises de sensibilidade (testar diferentes WACC e g) para entender como o valuation varia em diferentes cenários econômicos e de mercado.")
+print("4. **Atratividade para Investidores:** O valuation estimado oferece uma base sólida para discussões com potenciais investidores, demonstrando o retorno esperado do capital.")
+print("\nEssas visualizações e análises proporcionam uma compreensão aprofundada da saúde financeira e do valor de mercado potencial da HARU.")
+git add .
+git commit -m "Refina análises financeiras com gráficos e insights em Jupyter Notebooks"
+git push origin main
