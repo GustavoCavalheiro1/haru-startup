@@ -93,9 +93,8 @@ Apresentamos uma visão consolidada da nossa projeção de receita para os próx
 ## 📞 Contato
 
 
-* **Email:** [Seu Email Aqui]
 * **LinkedIn:** [(https://www.linkedin.com/in/gustavo-cavalheiro-23aa31160/)]
-* **Website:** [Link para o website da HARU, se houver]
+
 
 ---
 
